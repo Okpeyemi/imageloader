@@ -4,9 +4,42 @@ const app = express();
 const { pool } = require("./dbConfig");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const cors = require("cors")
+const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
+
+// Vérification et création du dossier "uploads" s'il n'existe pas
+const uploadsDir = path.join(__dirname, "uploads");
+
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log('Dossier "uploads" créé avec succès');
+} else {
+  console.log('Le dossier "uploads" existe déjà');
+}
+
+async function createUsersTable() {
+  const createTableQuery = `
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      email VARCHAR(255) UNIQUE NOT NULL,
+      password VARCHAR(255) NOT NULL,
+      role VARCHAR(50),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  
+  try {
+    await pool.query(createTableQuery);
+    console.log("Table 'users' vérifiée ou créée avec succès.");
+  } catch (err) {
+    console.error("Erreur lors de la création de la table 'users':", err);
+  }
+}
+
+createUsersTable();
 
 const PORT = process.env.PORT || 4000;
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key";
@@ -128,7 +161,7 @@ const storage = multer.diskStorage({
   
   const upload = multer({
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 },
+    limits: { fileSize: 50 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
       const filetypes = /jpeg|jpg|png|gif/;
       const mimetype = filetypes.test(file.mimetype);
@@ -243,11 +276,10 @@ app.get("/api/uploads/filter", (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Erreur serveur lors du filtrage des fichiers" });
+    res.status(500).json({ error: "Erreur serveur" });
   }
 });
 
-
 app.listen(PORT, () => {
-  console.log(`Le serveur tourne bien sur ${PORT}`);
+  console.log(`Serveur démarré sur le port ${PORT}`);
 });

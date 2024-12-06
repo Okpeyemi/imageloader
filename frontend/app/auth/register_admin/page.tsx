@@ -54,7 +54,7 @@ const page = () => {
         email: email,
         password: password,
         password2: password2,
-        role: "user",
+        role: "admin",
       };
       const response = await postUser(userData);
       console.log(`La réponse de postUser est :`, response);
@@ -68,7 +68,7 @@ const page = () => {
     <div className="p-5 h-screen">
       <div className="flex h-full">
         <div className="bg-primary w-[50%] h-full md:hidden rounded-3xl p-10 flex justify-center items-center">
-          <Image className="w-[70%]" src={SignUp} alt="Inscription User" />
+          <Image className="w-[70%]" src={SignUp} alt="Inscription Admin" />
         </div>
         <div className="w-[50%] md:w-full p-10">
           <div className="w-[70%] h-full mx-auto flex flex-col justify-center">

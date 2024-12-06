@@ -111,7 +111,7 @@ const Page = () => {
             </div>
             <div>
               <h3 className="text-lg font-bold my-5 text-primary">Liste des images</h3>
-              <div className="max-lg:h-[66vh] h-[65vh] overflow-y-auto p-2">
+              <div className="max-lg:h-[66vh] h-[65vh] overflow-y-auto px-5 py-2">
                 <div className="flex flex-wrap gap-5 justify-start ">
                   {images.length > 0 ? (
                     images.map((image, index) => (

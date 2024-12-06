@@ -15,11 +15,11 @@ import "@aws-amplify/ui-react/styles.css";
 import axios from "axios";
 
 const ImageUploader = () => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null); // Stocke le fichier sélectionné
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string>("");
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]; // Vérifie s'il y a un fichier sélectionné
+    const file = event.target.files?.[0];
     if (file) {
       setSelectedFile(file);
     }
@@ -62,18 +62,18 @@ const ImageUploader = () => {
           <span className="ml-3 max-md:hidden">Ajouter une ou des image(s)</span>
         </div>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="w-full">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-[30px] text-primary">
             Ajout d'images
           </AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogDescription className="w-full">
             <span className="text-[20px] mb-5">
               Veuillez s'il vous plaît sélectionner les images que vous voulez
               ajouter.
             </span>
-            <span className="w-full h-[200px] rounded-lg flex items-center justify-center border-primary border-2 my-5 border-dashed">
-              <input type="file" accept="image/*" onChange={handleFileChange} />
+            <span className="h-[200px] rounded-lg flex flex-wrap items-center justify-center border-primary border-2 my-5 border-dashed">
+              <input className="w-full flex justify-center items-center" type="file" accept="image/*" onChange={handleFileChange} />
             </span>
             {uploadStatus && <span className="mt-3 text-primary">{uploadStatus}</span>}
           </AlertDialogDescription>

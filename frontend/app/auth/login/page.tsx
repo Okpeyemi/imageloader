@@ -48,10 +48,10 @@ const page = () => {
   return (
     <div className="p-5 h-screen">
       <div className="flex h-full">
-        <div className="bg-primary w-[50%] h-full rounded-3xl p-10 flex items-center justify-center">
+        <div className="bg-primary w-[50%] h-full md:hidden rounded-3xl p-10 flex items-center justify-center">
           <Image className="w-[70%]" src={SignIn} alt="Connexion" />
         </div>
-        <div className="w-[50%] p-10">
+        <div className="w-[50%] md:w-full p-10">
           <div className="w-[70%] h-full mx-auto flex flex-col justify-center">
             <h1 className="text-[50px] font-medium text-start my-10 text-primary">
               Connexion
