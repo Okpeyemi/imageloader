@@ -68,12 +68,12 @@ const page = () => {
     <div className="p-5 h-screen">
       <div className="flex h-full">
         <div className="bg-primary w-[50%] h-full md:hidden rounded-3xl p-10 flex justify-center items-center">
-          <Image className="w-[70%]" src={SignUp} alt="Inscription Admin" />
+          <Image className="w-[70%]" src={SignUp} alt="Inscription" />
         </div>
         <div className="w-[50%] md:w-full p-10">
           <div className="w-[70%] h-full mx-auto flex flex-col justify-center">
             <h1 className="text-[50px] font-medium text-start my-10 text-primary">
-              Inscription
+              Inscription Admin
             </h1>
             <div>
               <div className="my-3">
