@@ -1,6 +1,8 @@
 "use client";
-import { postLogin, postUser } from "@/services/api";
+import { postLogin } from "@/services/api";
 import React, { useState } from "react";
+import SignIn from "@/public/sign-in.png";
+import Image from "next/image";
 
 const page = () => {
   const [email, setEmail] = useState("");
@@ -12,6 +14,22 @@ const page = () => {
   };
 
   const login = async () => {
+    if (!email.trim()) {
+      alert("Veuillez entrer votre adresse email.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert("Veuillez entrer une adresse email valide.");
+      return;
+    }
+
+    if (!password.trim()) {
+      alert("Veuillez entrer un mot de passe.");
+      return;
+    }
+
     try {
       const userData = {
         email: email,
@@ -19,18 +37,20 @@ const page = () => {
       };
       const response = await postLogin(userData);
       console.log(`La réponse de postLogin est :`, response);
+
       const token = response.token;
       localStorage.setItem("token", token);
       window.location.href = "/dashboard";
     } catch (error) {
-      console.error(`Erreur lors de la récupération de la réponse :`, error);
     }
   };
 
   return (
     <div className="p-5 h-screen">
       <div className="flex h-full">
-        <div className="bg-primary w-[50%] h-full rounded-3xl p-10">jblj </div>
+        <div className="bg-primary w-[50%] h-full rounded-3xl p-10 flex items-center justify-center">
+          <Image className="w-[70%]" src={SignIn} alt="Connexion" />
+        </div>
         <div className="w-[50%] p-10">
           <div className="w-[70%] h-full mx-auto flex flex-col justify-center">
             <h1 className="text-[50px] font-medium text-start my-10 text-primary">

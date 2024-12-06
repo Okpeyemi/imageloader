@@ -12,7 +12,7 @@ import {
 
 type ShowRealImageProps = {
   selectedImage: string;
-  onClose: () => void;  // Ajout de la fonction de fermeture
+  onClose: () => void;
 };
 
 const ShowRealImage: React.FC<ShowRealImageProps> = ({ selectedImage, onClose }) => {

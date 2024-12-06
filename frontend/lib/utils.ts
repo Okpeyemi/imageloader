@@ -21,12 +21,6 @@ export const navbar: NavItem[] = [
     keyword: "d",
   },
   {
-    label: "Profil",
-    link: "/profil",
-    icon: User,
-    keyword: "p",
-  },
-  {
     label: "Utilisateurs",
     link: "/utilisateurs",
     icon: Users,

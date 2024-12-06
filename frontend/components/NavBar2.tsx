@@ -6,7 +6,7 @@ type NavBarProp = {
   role: string
 }
 
-const NavBar:React.FC<NavBarProp> = ({role}) => {
+const NavBar2:React.FC<NavBarProp> = ({role}) => {
   const pathname = usePathname();
   return (
     <div className="w-fit md:flex md:flex-col bg-primary">
@@ -30,4 +30,4 @@ const NavBar:React.FC<NavBarProp> = ({role}) => {
   );
 };
 
-export default NavBar;
+export default NavBar2;

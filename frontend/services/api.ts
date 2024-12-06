@@ -5,6 +5,16 @@ const api = axios.create({
   baseURL: `${API_URL}`,
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 403) {
+      window.location.href = "/auth/login";
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const postUser = async (user: {
   name: string;
   email: string;
@@ -22,7 +32,7 @@ export const postUser = async (user: {
     });
     return response.data;
   } catch (error) {
-    console.error("Erreur lors de l'enregistrement de l'utilisateur :", error);
+    alert("Erreur lors de l'enregistrement!")
     throw error;
   }
 };
@@ -35,7 +45,7 @@ export const postLogin = async (user: { email: string; password: string }) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Erreur lors de la connexion de l'utilisateur :", error);
+    alert("Email ou mot de passe erroné!")
     throw error;
   }
 };
@@ -66,4 +76,18 @@ export const getImages = async () => {
         console.error("Erreur lors de la récupération des images :", error);
         throw error;
     }
+}
+
+export const getUsers = async (token: string) => {
+  try {
+    const response = await api.get("users", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Erreur lors de la récupération des images :", error);
+    throw error;
+  }
 }

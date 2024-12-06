@@ -58,7 +58,8 @@ const ImageUploader = () => {
     <AlertDialog>
       <AlertDialogTrigger>
         <div className="flex bg-primary text-background p-2 rounded-lg font-bold hover:bg-secondary-foreground">
-          <Plus className="mr-3" /> Ajouter une ou des image(s)
+          <Plus className="" /> 
+          <span className="ml-3 max-md:hidden">Ajouter une ou des image(s)</span>
         </div>
       </AlertDialogTrigger>
       <AlertDialogContent>
