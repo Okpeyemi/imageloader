@@ -107,9 +107,9 @@ app.post("/api/login", async (req, res) => {
       return res.status(401).json({ error: "Email ou mot de passe incorrect" });
     }
 
-    const payload = { id: user.rows[0].id, email: user.rows[0].email, role: user.rows[0].role };
+    const payload = { id: user.rows[0].id, name: user.rows[0].name, email: user.rows[0].email, role: user.rows[0].role };
 
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "1m" });
 
     res.status(200).json({
       message: "Connexion réussie",
@@ -187,6 +187,86 @@ app.get("/api/dashboard", authenticateToken, (req, res) => {
     user: req.user,
   });
 });
+
+// Route pour obtenir la liste de tous les utilisateurs sans vérification de token
+app.get("/api/users", authenticateToken, async (req, res) => {
+  try {
+    // Requête SQL pour récupérer tous les utilisateurs
+    const users = await pool.query(`SELECT id, name, email, role FROM users`);
+
+    // Vérification si des utilisateurs existent
+    if (users.rows.length === 0) {
+      return res.status(404).json({ error: "Aucun utilisateur trouvé" });
+    }
+
+    // Réponse avec la liste des utilisateurs
+    res.status(200).json({
+      message: "Liste des utilisateurs récupérée avec succès",
+      users: users.rows,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+});
+
+app.get("/api/uploads/filter", (req, res) => {
+  const fs = require("fs");
+  const directoryPath = path.join(__dirname, "uploads");
+
+  // Récupérer les paramètres de requête
+  const { type, date, name } = req.query;
+
+  try {
+    // Lire les fichiers du dossier
+    fs.readdir(directoryPath, (err, files) => {
+      if (err) {
+        return res.status(500).json({ error: "Impossible de lire le dossier" });
+      }
+
+      // Filtrer les fichiers en fonction des critères
+      let filteredFiles = files;
+
+      // Filtrer par type de fichier (extension)
+      if (type) {
+        const validTypes = type.split(",").map((t) => t.trim().toLowerCase());
+        filteredFiles = filteredFiles.filter((file) =>
+          validTypes.includes(path.extname(file).toLowerCase().slice(1)) // Ex: .jpeg -> jpeg
+        );
+      }
+
+      // Filtrer par date (fichiers créés après une certaine date)
+      if (date) {
+        const filterDate = new Date(date);
+        filteredFiles = filteredFiles.filter((file) => {
+          const filePath = path.join(directoryPath, file);
+          const stats = fs.statSync(filePath);
+          return stats.mtime > filterDate; // Modification après la date
+        });
+      }
+
+      // Filtrer par nom (recherche par mot-clé dans le nom de fichier)
+      if (name) {
+        const keyword = name.toLowerCase();
+        filteredFiles = filteredFiles.filter((file) =>
+          file.toLowerCase().includes(keyword)
+        );
+      }
+
+      // Retourner les fichiers filtrés avec leurs URLs
+      const filteredResults = filteredFiles.map((file) => ({
+        filename: file,
+        url: `${req.protocol}://${req.get("host")}/uploads/${file}`,
+      }));
+
+      res.status(200).json(filteredResults);
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur serveur lors du filtrage des fichiers" });
+  }
+});
+
 
 // Lancer le serveur
 app.listen(PORT, () => {
