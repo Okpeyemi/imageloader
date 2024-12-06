@@ -15,7 +15,6 @@ app.use(express.json());
 
 app.use(cors());
 
-// Middleware pour vérifier les tokens JWT
 function authenticateToken(req, res, next) {
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(" ")[1];
@@ -33,9 +32,6 @@ function authenticateToken(req, res, next) {
   });
 }
 
-// Routes
-
-// Enregistrement d'utilisateur
 app.post("/api/register", async (req, res) => {
   const { name, email, password, password2, role } = req.body;
 
@@ -84,7 +80,6 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
-// Connexion d'utilisateur
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -109,7 +104,7 @@ app.post("/api/login", async (req, res) => {
 
     const payload = { id: user.rows[0].id, name: user.rows[0].name, email: user.rows[0].email, role: user.rows[0].role };
 
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "1m" });
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "3h" });
 
     res.status(200).json({
       message: "Connexion réussie",
@@ -123,17 +118,17 @@ app.post("/api/login", async (req, res) => {
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, "uploads/"); // Le dossier où enregistrer les fichiers
+      cb(null, "uploads/");
     },
     filename: (req, file, cb) => {
       const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-      cb(null, uniqueSuffix + path.extname(file.originalname)); // Nom unique pour le fichier
+      cb(null, uniqueSuffix + path.extname(file.originalname)); 
     },
   });
   
   const upload = multer({
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // Limite de 5 Mo
+    limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
       const filetypes = /jpeg|jpg|png|gif/;
       const mimetype = filetypes.test(file.mimetype);
@@ -145,10 +140,8 @@ const storage = multer.diskStorage({
     },
   });
 
-// Servir les fichiers statiques (images uploadées)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Route pour uploader une image
 app.post("/api/upload", upload.single("image"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "Aucun fichier n'a été téléchargé" });
@@ -162,7 +155,6 @@ app.post("/api/upload", upload.single("image"), (req, res) => {
   });
 });
 
-// Route pour afficher toutes les images uploadées (optionnel)
 app.get("/api/uploads", (req, res) => {
   const fs = require("fs");
   const directoryPath = path.join(__dirname, "uploads");
@@ -180,7 +172,6 @@ app.get("/api/uploads", (req, res) => {
 });
 
 
-// Route protégée
 app.get("/api/dashboard", authenticateToken, (req, res) => {
   res.status(200).json({
     message: "Bienvenue au dashboard",
@@ -188,18 +179,14 @@ app.get("/api/dashboard", authenticateToken, (req, res) => {
   });
 });
 
-// Route pour obtenir la liste de tous les utilisateurs sans vérification de token
 app.get("/api/users", authenticateToken, async (req, res) => {
   try {
-    // Requête SQL pour récupérer tous les utilisateurs
     const users = await pool.query(`SELECT id, name, email, role FROM users`);
 
-    // Vérification si des utilisateurs existent
     if (users.rows.length === 0) {
       return res.status(404).json({ error: "Aucun utilisateur trouvé" });
     }
 
-    // Réponse avec la liste des utilisateurs
     res.status(200).json({
       message: "Liste des utilisateurs récupérée avec succès",
       users: users.rows,
@@ -214,38 +201,32 @@ app.get("/api/uploads/filter", (req, res) => {
   const fs = require("fs");
   const directoryPath = path.join(__dirname, "uploads");
 
-  // Récupérer les paramètres de requête
   const { type, date, name } = req.query;
 
   try {
-    // Lire les fichiers du dossier
     fs.readdir(directoryPath, (err, files) => {
       if (err) {
         return res.status(500).json({ error: "Impossible de lire le dossier" });
       }
 
-      // Filtrer les fichiers en fonction des critères
       let filteredFiles = files;
 
-      // Filtrer par type de fichier (extension)
       if (type) {
         const validTypes = type.split(",").map((t) => t.trim().toLowerCase());
         filteredFiles = filteredFiles.filter((file) =>
-          validTypes.includes(path.extname(file).toLowerCase().slice(1)) // Ex: .jpeg -> jpeg
+          validTypes.includes(path.extname(file).toLowerCase().slice(1))
         );
       }
 
-      // Filtrer par date (fichiers créés après une certaine date)
       if (date) {
         const filterDate = new Date(date);
         filteredFiles = filteredFiles.filter((file) => {
           const filePath = path.join(directoryPath, file);
           const stats = fs.statSync(filePath);
-          return stats.mtime > filterDate; // Modification après la date
+          return stats.mtime > filterDate;
         });
       }
 
-      // Filtrer par nom (recherche par mot-clé dans le nom de fichier)
       if (name) {
         const keyword = name.toLowerCase();
         filteredFiles = filteredFiles.filter((file) =>
@@ -253,7 +234,6 @@ app.get("/api/uploads/filter", (req, res) => {
         );
       }
 
-      // Retourner les fichiers filtrés avec leurs URLs
       const filteredResults = filteredFiles.map((file) => ({
         filename: file,
         url: `${req.protocol}://${req.get("host")}/uploads/${file}`,
@@ -268,7 +248,6 @@ app.get("/api/uploads/filter", (req, res) => {
 });
 
 
-// Lancer le serveur
 app.listen(PORT, () => {
   console.log(`Le serveur tourne bien sur ${PORT}`);
 });
