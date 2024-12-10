@@ -3,9 +3,10 @@ import React from 'react'
 
 type HeaderProp = {
   name: string;
+  role: string;
 }
 
-const Header:React.FC<HeaderProp> = ({name}) => {
+const Header:React.FC<HeaderProp> = ({name, role}) => {
   const logOut = () => {
     localStorage.removeItem("token");
     window.location.href = "/auth/login";
@@ -13,7 +14,7 @@ const Header:React.FC<HeaderProp> = ({name}) => {
   return (
     <div className="h-[8vh] w-full border-b border-border">
         <div className="flex h-full justify-between items-center mx-5">
-            <h3 className="text-primary text-3xl max-md:text-[20px]">Hello <span className="font-bold">{name}</span> </h3>
+            <h3 className="text-primary text-3xl max-md:text-[20px]">Hello {role === "admin" ? "Administrateur" : (role === "user" ? "Utilisateur": "")} <span className="font-bold">{name}</span> </h3>
             <button className="bg-destructive text-background flex p-2 rounded-lg font-bold hover:bg-red-200 hover:text-destructive" onClick={logOut}><LogOut className="" /> <span className="ml-2 max-md:hidden">Déconnexion</span></button>
         </div>
     </div>

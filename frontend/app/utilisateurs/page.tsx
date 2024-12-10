@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import AdminLayout from "../adminlayout";
 import Header from "@/components/Header";
 import { User } from "lucide-react";
+import Spinner from "@/components/Spinner";
 
 const Page = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -13,10 +14,10 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
 
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorage.getItem("token");
-
       if (token) {
         const response = await getUserAuthorization(token);
         const userRole = response.user.role;
@@ -39,10 +40,11 @@ const Page = () => {
 
   return (
     <AdminLayout>
+      { token ? "" : (<Spinner />)}
       <div className="flex w-full h-screen">
         <NavBar role={role} />
         <div className="w-full flex flex-col">
-          <Header name={name} />
+          <Header name={name} role={role} />
           <div className="m-5">
             <div className="flex justify-between">
               <h3 className="font-medium text-[30px] text-primary">

@@ -7,12 +7,15 @@ import AdminLayout from "../adminlayout";
 import Header from "@/components/Header";
 import ImageUploader from "@/components/ImageUploader";
 import ShowRealImage from "@/components/ShowRealImage";
+import Spinner from "@/components/Spinner";
 
 const page = () => {
   const [images, setImages] = useState<string[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [role, setRole] = useState("");
   const [name, setName] = useState("");
+
+  const token = localStorage.getItem("token");
 
   const handleImageClick = (image: string) => {
     setSelectedImage(image);
@@ -24,7 +27,6 @@ const page = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorage.getItem("token");
 
       if (token) {
         const response = await getUserAuthorization(token);
@@ -45,10 +47,11 @@ const page = () => {
   }, []);
   return (
     <AdminLayout>
+      { token ? "" : (<Spinner />)}
       <div className="flex w-full h-screen">
         <NavBar role={role} />
         <div className="w-full flex flex-col">
-          <Header name={name} />
+          <Header name={name} role={role} />
           <div className="m-5">
             <div className="flex justify-between">
               <h3 className="font-medium text-[30px] text-primary">Dashboard</h3>
